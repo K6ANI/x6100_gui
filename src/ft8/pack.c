@@ -31,9 +31,157 @@ int32_t pack28(const char* callsign)
 
     if (starts_with(callsign, "CQ_"))
     {
-        int nnum = 0, nlet = 0;
+        /* Jerry Shaw K6ANI
+        Added the code to process the "CQ_" Special Tokens.
+        
+        The CQ message has the possibility of an added modifier field to
+        allow special types of CQ messages. These messages are seen on the
+        received end as a standard CQ followed by 000 - 999, A - Z,
+        AA - ZZ, AAA - ZZ or AAAA - ZZZZ. In general, this allows a
+        3-digit numeric field to be used to indicate a frequency offset or 
+        the lower digits of the frequency. The A - Z through AAAA - ZZZZ
+        uppercase alphabetic-only field is used to identify the type of CQ
+        being sent. It can be used for such things as identifying a SOTA/POTA 
+        type of CQ, or a specific type of contest CQ.
 
-        // TODO:
+        In this special type of CQ, the "callsign" parameter to this function 
+        starts with "CQ_" followed by either a 3-digit numeric value or one
+        of the 1, 2, 3 or 4 alphabetic uppercase character values A - ZZZZ,
+        with no internal spaces. Note that the message processing function
+        that calls this function is expecting a space after the end of this
+        CQ field. So, this part of the function will process up to the first
+        space character, to the end of the string or to a maximum of 8
+        characters, whichever comes first.
+
+        For safety and versatility, this section of the code is designed to 
+        convert any valid alphabetic field which may have lower case characters
+        into upper case characters. If the "CQ_" special token modifier is not
+        in one of the above valid formats, this part of the code will return
+        a regular "CQ" token instead.
+        */
+
+        /* 
+        Generate a string copy of the Modifier part of the "CQ_" message, with
+        all characters converted to upper case, stopping at the end of the
+        string or the first space character, and calculating the Modifier length.
+        */
+
+        char cq_modifier [8] = "";
+        uint8_t modifier_length = 0;
+
+        while ((modifier_length < 8)
+            && (callsign[modifier_length + 3] != ' ')
+            && (callsign[modifier_length + 3] != NULL))
+        {
+            cq_modifier[modifier_length] =
+                to_upper(callsign[modifier_length + 3]);
+
+            modifier_length++;
+        };
+        
+        /*
+        Check if the Modifier is a valid 3-digit numeric field. If so,
+        convert it to the equivalent numeric value, and then to the special 
+        Token for this number.
+        */
+
+        int32_t cq_modifier_token = 2; // Token initialized to "CQ" token
+
+        if ((modifier_length == 3)
+            && is_digit(cq_modifier[0])
+            && is_digit(cq_modifier[1])
+            && is_digit(cq_modifier[2]))                
+        {
+            cq_modifier_token =
+                ((int32_t)(cq_modifier[0] - '0') * 10 * 10)
+                + ((int32_t)(cq_modifier[1] - '0') * 10)
+                + (int32_t)(cq_modifier[2] - '0')
+                + 3;
+        }
+
+        /*
+        Check if the Modifier has at least 1 and no more than 4 upper case
+        alphabetic characters. If not, return the "CQ" token.
+
+        Based on the length of the Modifier, calculate the Token.
+        */
+
+        /*
+        Length 1 Alphabetic check and conversion to Token.
+        */
+
+        else if ((modifier_length == 1)
+            && is_letter(cq_modifier[0]))
+        {
+            cq_modifier_token =
+                (int32_t)(cq_modifier[0] - 'A')
+                + 1004;
+        }
+
+        /*
+        Length 2 Alphabetic check and conversion to Token.
+        */
+
+        else if ((modifier_length == 2)
+            && is_letter(cq_modifier[0])
+            && is_letter(cq_modifier[1]))
+
+        {
+            cq_modifier_token =
+                ((int32_t)(cq_modifier[0] - 'A') * 27)
+                + (int32_t)(cq_modifier[0] - 'A')
+                + 1031;
+        }
+
+        /*
+        Length 3 Alphabetic check and conversion to Token.
+        */
+
+        else if ((modifier_length == 3)
+            && is_letter(cq_modifier[0])
+            && is_letter(cq_modifier[1])
+            && is_letter(cq_modifier[2]))
+        {
+            cq_modifier_token =
+                ((int32_t)(cq_modifier[0] - 'A') * 27 * 27)
+                + ((int32_t)(cq_modifier[1] - 'A') * 27)
+                + (int32_t)(cq_modifier[2] - 'A')
+                + 1760;
+        }
+
+
+        /*
+        Length 4 Alphabetic check and conversion to Token.
+        */
+        else if ((modifier_length == 4)
+            && is_letter(cq_modifier[0])
+            && is_letter(cq_modifier[1])
+            && is_letter(cq_modifier[2])
+            && is_letter(cq_modifier[3]))
+        {
+            cq_modifier_token =
+                ((int32_t)(cq_modifier[0] - 'A') * 27 * 27 * 27)
+                + ((int32_t)(cq_modifier[1] - 'A') * 27 * 27)
+                + ((int32_t)(cq_modifier[2] - 'A') * 27)
+                + (int32_t)(cq_modifier[3] - 'A')
+                + 21443;
+        }
+
+        /*
+        No valid Modifier field has been found. Set the Token for the
+        "CQ" token.
+        */
+
+        else
+        {
+            cq_modifier_token = 2;
+        };
+        
+        /*
+        Return the Token value.
+        */
+
+        return cq_modifier_token;
     }
 
     // TODO: Check for <...> callsign
@@ -317,6 +465,14 @@ bool test1()
         "LL3JG",
         "LL3AJG",
         "CQ ",
+        "CQ_000",
+        "CQ_Z",
+        "CQ_AA",
+        "CQ_ZZZ",
+        "CQ_AAAA"
+        "CQ_",
+        "CQ_AAA0",
+        "CQ_99A",
         0
     };
 
@@ -338,6 +494,8 @@ bool test2()
         "L0UAA LL3JG +02",
         "L0UAA LL3JG RRR",
         "L0UAA LL3JG 73",
+        "CQ_000 LL3JG KO26",
+        "CQ_AAAA LL3JG KO26",
         0
     };
 
