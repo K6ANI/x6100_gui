@@ -904,6 +904,53 @@ static void make_tx_msg(ft8_tx_msg_t msg, int16_t snr) {
 
     switch (msg) {
         case MSG_TX_CQ:
+
+            /* Jerry Shaw K6ANI
+            As per the latest FT8 (and FT4) Specifications, the CQ TX Message can have a Modifier
+            field immediately after the "CQ" part, and separated from it with a space character.
+            This is generally used to further identify the type of FT8 message, such as the type
+            of CQ in a contest, or a received frequency offset from the transmitted frequency.
+
+            The form of this Modifier is either an exactly 3-digit numeric field (000 - 999) or
+            one of four lengths of strictly upper case alphabetic fields (A - Z, AA - ZZ, 
+            AAA - ZZZ, AAAA - ZZZZ). As per the FT8 documentation, each of these five types of
+            CQ Modifiers is translated into a range of special 28-bit Tokens, that are
+            transmitted in place of the CQ Token. At the receiving end, the software decodes
+            the Token and returns a value of (for example) "CQ POTA" or "CQ 345".
+
+            The FT8 code has been changed in my:
+
+                https://github.com/K6ANI/x6100_gui
+
+            repository fork to add in the proper processing for the CQ Modifier. I added in the
+            processing to the FT8 code in the place that had been marked TODO, mainly in the
+            FT8 "pack28" function of the "pack.c" file, which generates the Tokens for CQ and
+            the other callsigns. The code now should handle a CQ TX message that starts with
+            "CQ_xxxx " where the xxxx can be any of the valid CQ Modifiers. Furthermore, if a
+            callsign starts with "CQ_" but does not contain one of the valid values for the 
+            CQ Modifiers, the code will instead genetrate a standard CQ Token, and ignore the 
+            Modifier part of the callsign
+            
+            Recommend making the following changes in the code if the full function of the
+            CQ Modifier is to be implemented.
+
+            The CQ Modifier field needs to be entered by the Operator into a system string
+            variable. This will require a change to the GUI to allow the operator to enter a
+            numeric or alphabetic entry for the CQ Modifier. The GUI will probably also need to 
+            check the value entered, so it is one of the valid numeric or alphabetic CQ Modifiers.
+            You may need to also include a default "unused" value (such as a blank or null string
+            ,or an "active" flag) so the code in this function knows that a CQ Modifier message
+            needs to be generated i nstead of a regular CQ message.
+
+            The code below that generates the CQ tx_msg message probably needs to be changed
+            with an "if" statement so that "CQ_" will replace "CQ " and the CQ Modifier is
+            added to the tx_msg as another string parameter.
+
+            There may need to be other changes needed to do this, but I haven't looked over 
+            all the code.
+             
+            */
+
             snprintf(tx_msg, sizeof(tx_msg) - 1, "CQ %s %s", params.callsign.x, qth);
             break;
             
