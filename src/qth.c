@@ -36,7 +36,7 @@ bool grid_check(const char *grid) {
     of each alphabetic field to correspond with the current Grid Square
     specification ranges. According to IARU rules of 2019, all alphabetic 
 	fields are upper case (see "Maidenhead Locator System" description
-	in Wikipedia.org).
+    in Wikipedia.org).
     */
 
     uint8_t len = strlen(grid);
