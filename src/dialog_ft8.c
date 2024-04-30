@@ -906,6 +906,7 @@ static void make_tx_msg(ft8_tx_msg_t msg, int16_t snr) {
         case MSG_TX_CQ:
 
             /* Jerry Shaw K6ANI
+            
             As per the latest FT8 (and FT4) Specifications, the CQ TX Message can have a Modifier
             field immediately after the "CQ" part, and separated from it with a space character.
             This is generally used to further identify the type of FT8 message, such as the type
@@ -938,9 +939,9 @@ static void make_tx_msg(ft8_tx_msg_t msg, int16_t snr) {
             variable. This will require a change to the GUI to allow the operator to enter a
             numeric or alphabetic entry for the CQ Modifier. The GUI will probably also need to 
             check the value entered, so it is one of the valid numeric or alphabetic CQ Modifiers.
-            You may need to also include a default "unused" value (such as a blank or null string
-            ,or an "active" flag) so the code in this function knows that a CQ Modifier message
-            needs to be generated i nstead of a regular CQ message.
+            You may need to also include a default "unused" value (such as a blank or null string,
+            or an "active" flag) so the code in this function knows that a CQ Modifier message
+            needs to be generated instead of a regular CQ message.
 
             The code below that generates the CQ tx_msg message probably needs to be changed
             with an "if" statement so that "CQ_" will replace "CQ " and the CQ Modifier is
