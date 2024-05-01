@@ -71,7 +71,7 @@ int32_t pack28(const char* callsign)
 
         while ((modifier_length < 8)
             && (callsign[modifier_length + 3] != ' ')
-            && (callsign[modifier_length + 3] != NULL))
+            && (callsign[modifier_length + 3] != '\0'))
         {
             cq_modifier[modifier_length] =
                 to_upper(callsign[modifier_length + 3]);
