@@ -32,7 +32,7 @@ void qth_update(const char *qth) {
 bool grid_check(const char *grid) {
 
     /* Jerry Shaw K6ANI
-    Corrected the code to check for all 4 active fields. Changed the range
+    Corrected the code to check for all 4 fields. Changed the range
     of each alphabetic field to correspond with the current Grid Square
     specification ranges. According to IARU rules of 2019, all alphabetic 
     fields are upper case (see "Maidenhead Locator System" description
@@ -84,7 +84,7 @@ const char *pos_grid(double lat, double lon) {
 
     /* Jerry Shaw K6ANI
     Added overrange checks to t1. Changed sructure
-    to be consistent with new checks.Changed syntax to
+    to be consistent with new checks. Changed syntax to
     be consistent with char/int/double types.
     */
 
@@ -202,14 +202,12 @@ const char *pos_grid(double lat, double lon) {
 
     t1 = (int)(lat / 15.0);
 
-
     if (t1 < 0) {
         t1 = 0;
     }
     else if (t1 > 9) {
         t1 = 9;
     }
-
 
     buf[7] = (char)t1 + '0';
 
@@ -232,7 +230,7 @@ void grid_pos(const char *grid, double *lat, double *lon) {
     if (!grid_check(grid)) {
         *lat = 0.0;
         *lon = 0.0
-            return;
+        return;
     }
 
     *lon += (toupper(grid[0]) - 'A') * 20.0;
@@ -255,23 +253,23 @@ void grid_pos(const char *grid, double *lat, double *lon) {
     
     switch (n) {
         case 2:
-            *lon += 20.0 / 2;
-            *lat += 10.0 / 2;
+            *lon += 20.0 / 2.0;
+            *lat += 10.0 / 2.0;
             break;
 
         case 4:
-            *lon += 2.0 / 2;
-            *lat += 1.0 / 2;
+            *lon += 2.0 / 2.0;
+            *lat += 1.0 / 2.0;
             break;
             
         case 6:
-            *lon += 5.0 / 60.0 / 2;
-            *lat += 2.5 / 60.0 / 2;
+            *lon += 5.0 / 60.0 / 2.0;
+            *lat += 2.5 / 60.0 / 2.0;
             break;
             
         case 8:
-            *lon += 5.0 / 600.0 / 2;
-            *lat += 2.5 / 600.0 / 2;
+            *lon += 5.0 / 600.0 / 2.0;
+            *lat += 2.5 / 600.0 / 2.0;
     }
 }
 
@@ -285,7 +283,7 @@ int32_t grid_dist(const char *grid) {
     */
 
     if (!grid_check(grid)) {
-        return 0.0;
+        return 0;
     }
 
     grid_pos(grid, &lat, &lon);
@@ -298,5 +296,5 @@ int32_t grid_dist(const char *grid) {
     double a = sin(dlat / 2.0) * sin(dlat / 2.0) + cos(lat) * cos(qth_lat) * sin(dlon / 2.0) * sin(dlon / 2.0);
     double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
     
-    return c * 6371;
+    return c * 6371.0;
 }
