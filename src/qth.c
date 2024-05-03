@@ -32,38 +32,44 @@ void qth_update(const char *qth) {
 bool grid_check(const char *grid) {
 
     /* Jerry Shaw K6ANI
-    Corrected the code to check for all 4 fields. Changed the range
-    of each alphabetic field to correspond with the current Grid Square
-    specification ranges. According to IARU rules of 2019, all alphabetic 
-    fields are upper case (see "Maidenhead Locator System" description
-    in Wikipedia.org, and the IARU VHF Handbook).
+    Changed the range of each alphabetic field to correspond with the
+	current Grid Square specification ranges. According to IARU rules
+	of 2019, all alphabetic fields are upper case (see "Maidenhead
+	Locator System" description in Wikipedia.org, and the IARU VHF
+	Handbook).
     */
 
     uint8_t len = strlen(grid);
+    
+    switch (len) {
+        case 8:
+            if (grid[7] < '0' || grid[7] > '9') return false;
+            if (grid[6] < '0' || grid[6] > '9') return false;
+        case 6:
+		
+			/*
+			Jerry Shaw K6ANI
+			buf[4] and buf[5] are now in the range 'A' to 'X'.
+			*/
+			
+            if (toupper(grid[5]) < 'A' || toupper(grid[5]) > 'X') return false;
+            if (toupper(grid[4]) < 'A' || toupper(grid[4]) > 'X') return false;
+        case 4:
+            if (grid[3] < '0' || grid[3] > '9') return false;
+            if (grid[2] < '0' || grid[2] > '9') return false;
+        case 2:
+			/*
+			Jerry Shaw K6ANI
+			buf[0] and buf[1] are in the range 'A' to 'R'.
+			*/
 
-    if (!((len == 8) || (len == 6) || (len == 4) || (len == 2)))
-        return false;
-
-    if (len == 8)
-    {
-        if (grid[7] < '0' || grid[7] > '9') return false;
-        if (grid[6] < '0' || grid[6] > '9') return false;
+            if (toupper(grid[1]) < 'A' || toupper(grid[1]) > 'R') return false;
+            if (toupper(grid[0]) < 'A' || toupper(grid[0]) > 'R') return false;
+            break;
+            
+        default:
+            return false;
     }
-
-    if (len >= 6)
-    {
-        if (toupper(grid[5]) < 'A' || toupper(grid[5]) > 'X') return false;
-        if (toupper(grid[4]) < 'A' || toupper(grid[4]) > 'X') return false;
-    }
-
-    if (len >= 4)
-    {
-        if (grid[3] < '0' || grid[3] > '9') return false;
-        if (grid[2] < '0' || grid[2] > '9') return false;
-    }
-
-    if (toupper(grid[1]) < 'A' || toupper(grid[1]) > 'R') return false;
-    if (toupper(grid[0]) < 'A' || toupper(grid[0]) > 'R') return false;
     
     return true;
 }
