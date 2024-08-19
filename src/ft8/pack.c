@@ -63,13 +63,14 @@ int32_t pack28(const char* callsign)
         /* 
         Generate a string copy of the Modifier part of the "CQ_" message, with
         all characters converted to upper case, stopping at the end of the
-        string or the first space character, and calculating the Modifier length.
+        string, the first space character or 5 characters, and calculating the
+        Modifier length.
         */
 
-        char cq_modifier [8] = "";
+        char cq_modifier [5] = "";
         uint8_t modifier_length = 0;
 
-        while ((modifier_length < 8)
+        while ((modifier_length < 5)
             && (callsign[modifier_length + 3] != ' ')
             && (callsign[modifier_length + 3] != '\0'))
         {
