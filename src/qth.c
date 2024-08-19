@@ -33,10 +33,10 @@ bool grid_check(const char *grid) {
 
     /* Jerry Shaw K6ANI
     Changed the range of each alphabetic field to correspond with the
-	current Grid Square specification ranges. According to IARU rules
-	of 2019, all alphabetic fields are upper case (see "Maidenhead
-	Locator System" description in Wikipedia.org, and the IARU VHF
-	Handbook).
+    current Grid Square specification ranges. According to IARU rules
+    of 2019, all alphabetic fields are upper case (see "Maidenhead
+    Locator System" description in Wikipedia.org, and the IARU VHF
+    Handbook).
     */
 
     uint8_t len = strlen(grid);
@@ -90,8 +90,19 @@ const char *pos_grid(double lat, double lon) {
 
     /* Jerry Shaw K6ANI
     Added overrange checks to t1. Changed sructure
-    to be consistent with new checks. Changed syntax to
-    be consistent with char/int/double types.
+    to be consistent with new checks, by using the 
+    in-range t1 to calculate the remainder for the
+    lat/lon.
+    
+    Changed syntax to be consistent with
+    char/int/double types in all the calculations, so
+    the result of all calculations are all the same
+    numeric type, to avoid unintentional truncations of
+    accuracy.
+
+    Changed the conversion from integer to char so the
+    grid result contains only upper case alphabetic
+    characters (see comment in grid_check).
     */
 
     lon += 180.0;
@@ -229,7 +240,7 @@ void grid_pos(const char *grid, double *lat, double *lon) {
     *lat = -90.0;
     
     /* Jerry Shaw K6ANI
-    Added check for valid grid. Return lat/lon 0
+    Added check for valid grid. Return lat/lon set to 0
     if not valid.
     */
 
