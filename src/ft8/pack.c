@@ -129,7 +129,7 @@ int32_t pack28(const char* callsign)
         {
             cq_modifier_token =
                 ((int32_t)(cq_modifier[0] - 'A') * 27)
-                + (int32_t)(cq_modifier[0] - 'A')
+                + (int32_t)(cq_modifier[1] - 'A')
                 + 1031;
         }
 
