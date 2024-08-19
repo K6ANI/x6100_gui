@@ -246,7 +246,7 @@ void grid_pos(const char *grid, double *lat, double *lon) {
 
     if (!grid_check(grid)) {
         *lat = 0.0;
-        *lon = 0.0
+        *lon = 0.0;
         return;
     }
 
